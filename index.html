@@ -3,104 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onix Dash - Gestão por KM</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Onix Pro - Gestão de Frota</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #004a99; --gold: #ce9d33; --red: #eb5757; --gray: #f4f7fa; }
-        body { font-family: 'Inter', sans-serif; background: var(--gray); margin: 0; padding: 15px; }
-        .app { max-width: 450px; margin: auto; }
+        :root {
+            --bg: #0a0c10;
+            --card-bg: #161b22;
+            --primary: #58a6ff;
+            --severo: #f85149;
+            --normal: #30a14e;
+            --text: #c9d1d9;
+            --gold: #d29922;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container { width: 100%; max-width: 600px; animation: fadeIn 0.8s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        header {
+            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+            padding: 30px 20px;
+            border-radius: 24px;
+            border: 1px solid #30363d;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .km-badge {
+            background: var(--primary);
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        input[type="number"] {
+            background: #0d1117;
+            border: 2px solid #30363d;
+            color: white;
+            width: 80%;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 28px;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 800;
+            transition: border 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); outline: none; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #30363d;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card h3 { margin: 0 0 15px 0; font-size: 18px; display: flex; align-items: center; justify-content: space-between; }
+
+        .history-tag { font-size: 10px; color: var(--gold); opacity: 0.8; }
+
+        /* Barras de Progresso Lado a Lado */
+        .bars-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         
-        .header { background: var(--blue); color: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .km-input-group { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; margin-top: 15px; }
-        input { width: 100%; border: none; padding: 10px; border-radius: 8px; font-size: 18px; font-weight: bold; box-sizing: border-box; outline: none; }
+        .bar-group { position: relative; }
+        .bar-label { font-size: 10px; font-weight: 700; margin-bottom: 5px; display: block; text-transform: uppercase; }
         
-        .card { background: white; padding: 18px; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        h3 { margin: 0; font-size: 16px; color: #333; }
-        
-        .progress-bg { background: #eee; height: 8px; border-radius: 4px; overflow: hidden; margin: 10px 0; }
-        .progress-fill { height: 100%; transition: 0.5s; }
-        
-        .info-km { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #666; }
-        .status-msg { font-size: 11px; margin-top: 5px; font-weight: bold; }
-        
-        .btn-reset { background: var(--blue); color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 11px; cursor: pointer; }
+        .progress-bg { background: #0d1117; height: 6px; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+
+        .km-remain { font-size: 11px; margin-top: 5px; display: block; font-weight: 600; }
+
+        .btn-reset {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #30363d;
+            color: var(--text);
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-reset:hover { background: #30363d; color: white; }
+
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
     </style>
 </head>
 <body>
 
-<div class="app">
-    <div class="header">
-        <span style="font-size: 12px; font-weight: 700; opacity: 0.8;">CHEVROLET ONIX LT</span>
-        <h1 style="margin: 0; font-size: 22px;">Painel de Manutenção</h1>
-        
-        <div class="km-input-group">
-            <label style="font-size: 11px; display: block; margin-bottom: 5px;">KM ATUAL DO PAINEL:</label>
-            <input type="number" id="kmAtual" placeholder="Ex: 15300" oninput="calcular()">
-        </div>
-    </div>
+<div class="app-container">
+    <header>
+        <span class="km-badge">Painel de Monitoramento</span>
+        <input type="number" id="kmInput" placeholder="000000" oninput="updateAll()">
+        <p style="font-size: 12px; margin-top: 10px; opacity: 0.6;">Insira a quilometragem atual do odômetro</p>
+    </header>
 
-    <div id="lista-manutencao"></div>
+    <div id="deck"></div>
 </div>
 
 <script>
-    // Configuração baseada no seu manual (Uso Severo)
-    const itens = [
-        { id: 'oleo', nome: 'Óleo e Filtro (5k)', intervalo: 5000 },
-        { id: 'combustivel', nome: 'Filtro Combustível (10k)', intervalo: 10000 },
-        { id: 'ar', nome: 'Filtro de Ar (40k)', intervalo: 40000 },
-        { id: 'freio', nome: 'Fluido de Freio (2 anos)', intervalo: 20000 }, // Estimativa por KM
-        { id: 'cambio', nome: 'Óleo de Câmbio (80k)', intervalo: 80000 }
+    const CONFIG = [
+        { id: 'oleo', name: 'Óleo do Motor e Filtro', normal: 10000, severo: 5000, desc: 'Dexos 1 Gen 3' },
+        { id: 'combustivel', name: 'Filtro de Combustível', normal: 10000, severo: 10000, desc: 'Troca Preventiva' },
+        { id: 'pneu', name: 'Rodízio de Pneus', normal: 10000, severo: 5000, desc: 'Cruzar em X' },
+        { id: 'ar_motor', name: 'Filtro de Ar (Motor)', normal: 40000, severo: 20000, desc: 'Elemento Filtrante' },
+        { id: 'cabine', name: 'Filtro de Ar Condicionado', normal: 20000, severo: 10000, desc: 'Saúde Interna' },
+        { id: 'freio_fluido', name: 'Fluido de Freio', normal: 20000, severo: 20000, desc: 'DOT 4 LV (2 anos)' },
+        { id: 'velas', name: 'Velas de Ignição', normal: 100000, severo: 100000, desc: 'Original Iridium' },
+        { id: 'cambio', name: 'Óleo Câmbio Automático', normal: 160000, severo: 80000, desc: 'Dexron VI' },
+        { id: 'arrefecimento', name: 'Líquido Arrefecimento', normal: 150000, severo: 150000, desc: 'Aditivo ACDelco Rosa' },
+        { id: 'correia_acess', name: 'Correia de Acessórios', normal: 120000, severo: 120000, desc: 'Alternador/AC' },
+        { id: 'correia_dentada', name: 'Correia Dentada (Banhada)', normal: 240000, severo: 240000, desc: 'Crucial: Óleo Correto' }
     ];
 
-    function salvarTroca(id) {
-        const km = document.getElementById('kmAtual').value;
-        if(!km) return alert("Digite a KM atual primeiro!");
-        localStorage.setItem('ultima_troca_' + id, km);
-        calcular();
-    }
+    function updateAll() {
+        const kmAtual = parseInt(document.getElementById('kmInput').value) || 0;
+        localStorage.setItem('km_save', kmAtual);
+        const deck = document.getElementById('deck');
+        deck.innerHTML = '';
 
-    function calcular() {
-        const kmAtual = parseFloat(document.getElementById('kmAtual').value) || 0;
-        localStorage.setItem('km_usuario', kmAtual);
-        
-        const container = document.getElementById('lista-manutencao');
-        container.innerHTML = '';
+        CONFIG.forEach(item => {
+            const ultimaTroca = parseInt(localStorage.getItem('last_'+item.id)) || 0;
+            const rodado = kmAtual - ultimaTroca;
+            
+            // Cálculos
+            const pSev = Math.min((rodado / item.severo) * 100, 100);
+            const pNorm = Math.min((rodado / item.normal) * 100, 100);
+            const rSev = item.severo - rodado;
+            const rNorm = item.normal - rodado;
+            const trocasRealizadas = Math.floor(kmAtual / item.severo);
 
-        itens.forEach(item => {
-            const ultimaTroca = parseFloat(localStorage.getItem('ultima_troca_' + item.id)) || 0;
-            const kmRodados = kmAtual - ultimaTroca;
-            const kmRestantes = item.intervalo - kmRodados;
-            let percent = (kmRodados / item.intervalo) * 100;
-            if(percent > 100) percent = 100;
-            if(percent < 0) percent = 0;
-
-            const cor = percent > 85 ? 'var(--red)' : percent > 50 ? 'var(--gold)' : '#27ae60';
-
-            container.innerHTML += `
-                <div class="card">
-                    <div class="card-header">
-                        <h3>${item.nome}</h3>
-                        <button class="btn-reset" onclick="salvarTroca('${item.id}')">Troquei Agora</button>
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <h3>
+                    <span>${item.name}</span>
+                    <span class="history-tag">Est. ${trocasRealizadas}x trocados</span>
+                </h3>
+                <p style="font-size: 11px; margin-top: -10px; opacity: 0.5;">${item.desc}</p>
+                
+                <div class="bars-container">
+                    <div class="bar-group">
+                        <span class="bar-label" style="color:var(--severo)">Uso Severo</span>
+                        <div class="progress-bg"><div class="progress-fill" style="width:${pSev}%; background:var(--severo)"></div></div>
+                        <span class="km-remain" style="color:${rSev <= 0 ? 'var(--severo)' : 'var(--text)'}">${rSev <= 0 ? 'VENCIDO' : 'Faltam '+rSev+'km'}</span>
                     </div>
-                    <div class="progress-bg">
-                        <div class="progress-fill" style="width: ${percent}%; background: ${cor}"></div>
+                    <div class="bar-group">
+                        <span class="bar-label" style="color:var(--normal)">Uso Normal</span>
+                        <div class="progress-bg"><div class="progress-fill" style="width:${pNorm}%; background:var(--normal)"></div></div>
+                        <span class="km-remain">${rNorm <= 0 ? 'VENCIDO' : 'Faltam '+rNorm+'km'}</span>
                     </div>
-                    <div class="info-km">
-                        <span>Rodou: ${kmRodados} km</span>
-                        <span>Faltam: ${kmRestantes <= 0 ? 'VENCIDO' : kmRestantes + ' km'}</span>
-                    </div>
-                    <p class="status-msg" style="color: ${cor}">
-                        ${kmRestantes <= 0 ? 'MANUTENÇÃO IMEDIATA!' : 'Componente em bom estado'}
-                    </p>
                 </div>
+
+                <button class="btn-reset" onclick="resetItem('${item.id}')">Registrar Manutenção</button>
             `;
+            deck.appendChild(card);
         });
     }
 
-    // Carregar KM salva ao abrir
-    document.getElementById('kmAtual').value = localStorage.getItem('km_usuario');
-    calcular();
+    function resetItem(id) {
+        const km = document.getElementById('kmInput').value;
+        if(!km) return alert("Insira a quilometragem atual!");
+        localStorage.setItem('last_'+id, km);
+        updateAll();
+    }
+
+    // Init
+    const savedKm = localStorage.getItem('km_save');
+    if(savedKm) {
+        document.getElementById('kmInput').value = savedKm;
+        updateAll();
+    }
 </script>
 
 </body>
