@@ -3,138 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onix Gestão Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Onix Pro - Ciclo de Manutenção</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #050505;
-            --card-bg: #121212;
-            --border: #222;
-            --accent: #58a6ff;
-            --normal: #2ea043;
-            --severo: #f85149;
-            --text: #e6edf3;
-        }
-
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; justify-content: center; }
-        .app { width: 100%; max-width: 500px; }
-
-        header {
-            background: linear-gradient(180deg, #161b22 0%, #050505 100%);
-            padding: 30px 20px; border-radius: 24px; border: 1px solid var(--border);
-            text-align: center; margin-bottom: 20px;
-        }
-
-        .km-label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
-        input[type="number"] {
-            background: transparent; border: none; color: white; width: 100%;
-            font-size: 42px; font-weight: 800; text-align: center; margin-top: 10px; outline: none;
-        }
-
-        .card {
-            background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border);
-            padding: 20px; margin-bottom: 15px; position: relative;
-        }
-
-        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .icon { font-size: 24px; background: #1f1f1f; padding: 10px; border-radius: 12px; }
-        .title-group h3 { margin: 0; font-size: 16px; }
-        .title-group p { margin: 0; font-size: 11px; opacity: 0.5; }
-
-        .mode-row { margin-bottom: 15px; padding: 10px; border-radius: 10px; background: #1a1a1a; }
-        .mode-info { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; font-weight: 600; }
+        :root { --bg: #050505; --card: #121212; --normal: #2ea043; --severo: #f85149; --accent: #58a6ff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #e6edf3; margin: 0; padding: 15px; }
+        .app { max-width: 500px; margin: auto; }
         
-        .progress-bar { height: 6px; background: #252525; border-radius: 10px; overflow: hidden; }
-        .fill { height: 100%; transition: width 1s ease; }
+        header { background: #161b22; padding: 25px; border-radius: 20px; border: 1px solid #30363d; text-align: center; margin-bottom: 20px; }
+        .km-title { font-size: 10px; font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+        input { background: transparent; border: none; color: white; width: 100%; font-size: 42px; font-weight: 900; text-align: center; outline: none; }
 
-        .km-details { display: flex; justify-content: space-between; font-size: 10px; margin-top: 6px; }
-        .vencido { color: var(--severo); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .card { background: var(--card); border-radius: 20px; border: 1px solid #30363d; padding: 20px; margin-bottom: 15px; }
+        .card-title { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
+        
+        .mode-box { background: #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid #333; }
+        .normal-border { border-left-color: var(--normal); }
+        .severo-border { border-left-color: var(--severo); }
 
-        .btn-check {
-            width: 100%; background: #21262d; border: 1px solid #30363d; color: white;
-            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 12px; cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn-check:hover { background: var(--accent); color: black; }
+        .label-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-bottom: 8px; }
+        .bar-bg { background: #252525; height: 10px; border-radius: 5px; overflow: hidden; margin: 10px 0; }
+        .bar-fill { height: 100%; transition: width 0.5s ease; }
+        
+        .footer-row { display: flex; justify-content: space-between; font-size: 11px; margin-top: 8px; font-weight: 600; }
+        .status-tag { padding: 2px 6px; border-radius: 4px; font-size: 9px; text-transform: uppercase; }
+        .vencido-tag { background: rgba(248, 81, 73, 0.2); color: var(--severo); }
+        .ok-tag { background: rgba(46, 160, 67, 0.2); color: var(--normal); }
     </style>
 </head>
 <body>
 
 <div class="app">
     <header>
-        <div class="km-label">KM Atual do Onix</div>
-        <input type="number" id="kmInput" placeholder="0" oninput="update()">
+        <div class="km-title">ODÔMETRO ATUAL</div>
+        <input type="number" id="kmInput" value="55430" oninput="calculate()">
     </header>
-
     <div id="deck"></div>
 </div>
 
 <script>
     const ITEMS = [
-        { id: 'oleo', name: 'Óleo do Motor', icon: '🛢️', normal: 10000, severo: 5000, spec: 'Dexos 1 Gen 3' },
-        { id: 'pneu', name: 'Rodízio de Pneus', icon: '🛞', normal: 10000, severo: 5000, spec: 'Conforme Manual pág. 97' },
-        { id: 'comb', name: 'Filtro Combustível', icon: '⛽', normal: 10000, severo: 10000, spec: 'Substituição Completa' },
-        { id: 'ar', name: 'Filtro de Ar Motor', icon: '🌪️', normal: 40000, severo: 20000, spec: 'Inspecionar a cada 10k' },
-        { id: 'cambio', name: 'Óleo de Câmbio (AT)', icon: '⚙️', normal: 160000, severo: 80000, spec: 'Dexron VI' },
-        { id: 'freio', name: 'Fluido de Freio', icon: '🛑', normal: 20000, severo: 20000, spec: 'DOT 4 LV' },
-        { id: 'vela', name: 'Velas de Ignição', icon: '⚡', normal: 100000, severo: 100000, spec: 'Iridium Original' }
+        { id: 'oleo', name: 'Óleo e Filtro', icon: '🛢️', normal: 10000, severo: 5000 },
+        { id: 'pneu', name: 'Rodízio de Pneus', icon: '🛞', normal: 10000, severo: 5000 },
+        { id: 'comb', name: 'Filtro Combustível', icon: '⛽', normal: 10000, severo: 10000 },
+        { id: 'ar', name: 'Filtro de Ar Motor', icon: '🌪️', normal: 40000, severo: 20000 }
     ];
 
-    function update() {
+    function calculate() {
         const km = parseInt(document.getElementById('kmInput').value) || 0;
-        localStorage.setItem('onix_km', km);
         const deck = document.getElementById('deck');
         deck.innerHTML = '';
 
         ITEMS.forEach(item => {
-            const last = parseInt(localStorage.getItem('last_'+item.id)) || 0;
-            const rodado = km - last;
+            // Lógica para Uso Normal
+            const cicloNormal = Math.floor(km / item.normal);
+            const ultimaNormal = cicloNormal * item.normal;
+            const proximaNormal = ultimaNormal + item.normal;
+            const rodadoNormal = km - ultimaNormal;
+            const percNormal = Math.min((rodadoNormal / item.normal) * 100, 100);
+
+            // Lógica para Uso Severo
+            const cicloSevero = Math.floor(km / item.severo);
+            const ultimaSevero = cicloSevero * item.severo;
+            const proximaSevero = ultimaSevero + item.severo;
+            const rodadoSevero = km - ultimaSevero;
+            const percSevero = Math.min((rodadoSevero / item.severo) * 100, 100);
 
             deck.innerHTML += `
                 <div class="card">
-                    <div class="card-header">
-                        <div class="icon">${item.icon}</div>
-                        <div class="title-group">
-                            <h3>${item.name}</h3>
-                            <p>${item.spec}</p>
+                    <div class="card-title">${item.icon} ${item.name}</div>
+                    
+                    <div class="mode-box normal-border">
+                        <div class="label-row">
+                            <span style="color:var(--normal)">USO NORMAL</span>
+                            <span>${percNormal.toFixed(1)}%</span>
+                        </div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:${percNormal}%; background:var(--normal)"></div></div>
+                        <div class="footer-row">
+                            <span>Próxima: ${proximaNormal.toLocaleString()} km</span>
+                            <span class="status-tag ok-tag">Faltam ${(proximaNormal - km).toLocaleString()} km</span>
                         </div>
                     </div>
 
-                    <div class="mode-row">
-                        <div class="mode-info"><span style="color:var(--normal)">USO NORMAL</span> <span>Ref: ${item.normal}km</span></div>
-                        <div class="progress-bar"><div class="fill" style="width:${Math.min((rodado/item.normal)*100, 100)}%; background:var(--normal)"></div></div>
-                        <div class="km-details">
-                            <span>Próxima: ${(last + item.normal).toLocaleString()}km</span>
-                            <span class="${rodado >= item.normal ? 'vencido' : ''}">${rodado >= item.normal ? 'VENCIDO' : 'Faltam '+(item.normal-rodado)+'km'}</span>
+                    <div class="mode-box severo-border">
+                        <div class="label-row">
+                            <span style="color:var(--severo)">USO SEVERO (Uber/99)</span>
+                            <span>${percSevero.toFixed(1)}%</span>
+                        </div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:${percSevero}%; background:var(--severo)"></div></div>
+                        <div class="footer-row">
+                            <span>Deveria ter feito: ${ultimaSevero.toLocaleString()} km</span>
+                            <span class="status-tag vencido-tag">Atraso: ${rodadoSevero.toLocaleString()} km</span>
                         </div>
                     </div>
-
-                    <div class="mode-row">
-                        <div class="mode-info"><span style="color:var(--severo)">USO SEVERO (Uber/99)</span> <span>Ref: ${item.severo}km</span></div>
-                        <div class="progress-bar"><div class="fill" style="width:${Math.min((rodado/item.severo)*100, 100)}%; background:var(--severo)"></div></div>
-                        <div class="km-details">
-                            <span>Próxima: ${(last + item.severo).toLocaleString()}km</span>
-                            <span class="${rodado >= item.severo ? 'vencido' : ''}">${rodado >= item.severo ? 'VENCIDO' : 'Faltam '+(item.severo-rodado)+'km'}</span>
-                        </div>
-                    </div>
-
-                    <button class="btn-check" onclick="reset('${item.id}')">Registrar Troca Realizada</button>
                 </div>
             `;
         });
     }
-
-    function reset(id) {
-        const km = document.getElementById('kmInput').value;
-        if(!km) return alert("Digite a KM atual!");
-        localStorage.setItem('last_'+id, km);
-        update();
-    }
-
-    document.getElementById('kmInput').value = localStorage.getItem('onix_km') || 0;
-    update();
+    calculate();
 </script>
-
 </body>
 </html>
