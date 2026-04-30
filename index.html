@@ -3,196 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Onix Pro - Gestão de Frota</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>Onix Gestão Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0a0c10;
-            --card-bg: #161b22;
-            --primary: #58a6ff;
+            --bg: #050505;
+            --card-bg: #121212;
+            --border: #222;
+            --accent: #58a6ff;
+            --normal: #2ea043;
             --severo: #f85149;
-            --normal: #30a14e;
-            --text: #c9d1d9;
-            --gold: #d29922;
+            --text: #e6edf3;
         }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--text); 
-            margin: 0; 
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .app-container { width: 100%; max-width: 600px; animation: fadeIn 0.8s ease; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .app { width: 100%; max-width: 500px; }
 
         header {
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-            padding: 30px 20px;
-            border-radius: 24px;
-            border: 1px solid #30363d;
-            margin-bottom: 20px;
-            text-align: center;
+            background: linear-gradient(180deg, #161b22 0%, #050505 100%);
+            padding: 30px 20px; border-radius: 24px; border: 1px solid var(--border);
+            text-align: center; margin-bottom: 20px;
         }
 
-        .km-badge {
-            background: var(--primary);
-            color: #000;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-weight: 800;
-            font-size: 12px;
-            text-transform: uppercase;
-        }
-
+        .km-label { font-size: 10px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; }
         input[type="number"] {
-            background: #0d1117;
-            border: 2px solid #30363d;
-            color: white;
-            width: 80%;
-            padding: 15px;
-            border-radius: 15px;
-            font-size: 28px;
-            text-align: center;
-            margin-top: 15px;
-            font-weight: 800;
-            transition: border 0.3s;
+            background: transparent; border: none; color: white; width: 100%;
+            font-size: 42px; font-weight: 800; text-align: center; margin-top: 10px; outline: none;
         }
-
-        input:focus { border-color: var(--primary); outline: none; }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #30363d;
-            position: relative;
-            overflow: hidden;
+            background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border);
+            padding: 20px; margin-bottom: 15px; position: relative;
         }
 
-        .card h3 { margin: 0 0 15px 0; font-size: 18px; display: flex; align-items: center; justify-content: space-between; }
+        .card-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .icon { font-size: 24px; background: #1f1f1f; padding: 10px; border-radius: 12px; }
+        .title-group h3 { margin: 0; font-size: 16px; }
+        .title-group p { margin: 0; font-size: 11px; opacity: 0.5; }
 
-        .history-tag { font-size: 10px; color: var(--gold); opacity: 0.8; }
-
-        /* Barras de Progresso Lado a Lado */
-        .bars-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        .mode-row { margin-bottom: 15px; padding: 10px; border-radius: 10px; background: #1a1a1a; }
+        .mode-info { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px; font-weight: 600; }
         
-        .bar-group { position: relative; }
-        .bar-label { font-size: 10px; font-weight: 700; margin-bottom: 5px; display: block; text-transform: uppercase; }
-        
-        .progress-bg { background: #0d1117; height: 6px; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; width: 0%; transition: width 1s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .progress-bar { height: 6px; background: #252525; border-radius: 10px; overflow: hidden; }
+        .fill { height: 100%; transition: width 1s ease; }
 
-        .km-remain { font-size: 11px; margin-top: 5px; display: block; font-weight: 600; }
+        .km-details { display: flex; justify-content: space-between; font-size: 10px; margin-top: 6px; }
+        .vencido { color: var(--severo); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        .btn-reset {
-            width: 100%;
-            background: transparent;
-            border: 1px solid #30363d;
-            color: var(--text);
-            padding: 10px;
-            border-radius: 10px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
+        .btn-check {
+            width: 100%; background: #21262d; border: 1px solid #30363d; color: white;
+            padding: 12px; border-radius: 12px; font-weight: 600; font-size: 12px; cursor: pointer;
+            transition: 0.3s;
         }
-
-        .btn-reset:hover { background: #30363d; color: white; }
-
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .btn-check:hover { background: var(--accent); color: black; }
     </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app">
     <header>
-        <span class="km-badge">Painel de Monitoramento</span>
-        <input type="number" id="kmInput" placeholder="000000" oninput="updateAll()">
-        <p style="font-size: 12px; margin-top: 10px; opacity: 0.6;">Insira a quilometragem atual do odômetro</p>
+        <div class="km-label">KM Atual do Onix</div>
+        <input type="number" id="kmInput" placeholder="0" oninput="update()">
     </header>
 
     <div id="deck"></div>
 </div>
 
 <script>
-    const CONFIG = [
-        { id: 'oleo', name: 'Óleo do Motor e Filtro', normal: 10000, severo: 5000, desc: 'Dexos 1 Gen 3' },
-        { id: 'combustivel', name: 'Filtro de Combustível', normal: 10000, severo: 10000, desc: 'Troca Preventiva' },
-        { id: 'pneu', name: 'Rodízio de Pneus', normal: 10000, severo: 5000, desc: 'Cruzar em X' },
-        { id: 'ar_motor', name: 'Filtro de Ar (Motor)', normal: 40000, severo: 20000, desc: 'Elemento Filtrante' },
-        { id: 'cabine', name: 'Filtro de Ar Condicionado', normal: 20000, severo: 10000, desc: 'Saúde Interna' },
-        { id: 'freio_fluido', name: 'Fluido de Freio', normal: 20000, severo: 20000, desc: 'DOT 4 LV (2 anos)' },
-        { id: 'velas', name: 'Velas de Ignição', normal: 100000, severo: 100000, desc: 'Original Iridium' },
-        { id: 'cambio', name: 'Óleo Câmbio Automático', normal: 160000, severo: 80000, desc: 'Dexron VI' },
-        { id: 'arrefecimento', name: 'Líquido Arrefecimento', normal: 150000, severo: 150000, desc: 'Aditivo ACDelco Rosa' },
-        { id: 'correia_acess', name: 'Correia de Acessórios', normal: 120000, severo: 120000, desc: 'Alternador/AC' },
-        { id: 'correia_dentada', name: 'Correia Dentada (Banhada)', normal: 240000, severo: 240000, desc: 'Crucial: Óleo Correto' }
+    const ITEMS = [
+        { id: 'oleo', name: 'Óleo do Motor', icon: '🛢️', normal: 10000, severo: 5000, spec: 'Dexos 1 Gen 3' },
+        { id: 'pneu', name: 'Rodízio de Pneus', icon: '🛞', normal: 10000, severo: 5000, spec: 'Conforme Manual pág. 97' },
+        { id: 'comb', name: 'Filtro Combustível', icon: '⛽', normal: 10000, severo: 10000, spec: 'Substituição Completa' },
+        { id: 'ar', name: 'Filtro de Ar Motor', icon: '🌪️', normal: 40000, severo: 20000, spec: 'Inspecionar a cada 10k' },
+        { id: 'cambio', name: 'Óleo de Câmbio (AT)', icon: '⚙️', normal: 160000, severo: 80000, spec: 'Dexron VI' },
+        { id: 'freio', name: 'Fluido de Freio', icon: '🛑', normal: 20000, severo: 20000, spec: 'DOT 4 LV' },
+        { id: 'vela', name: 'Velas de Ignição', icon: '⚡', normal: 100000, severo: 100000, spec: 'Iridium Original' }
     ];
 
-    function updateAll() {
-        const kmAtual = parseInt(document.getElementById('kmInput').value) || 0;
-        localStorage.setItem('km_save', kmAtual);
+    function update() {
+        const km = parseInt(document.getElementById('kmInput').value) || 0;
+        localStorage.setItem('onix_km', km);
         const deck = document.getElementById('deck');
         deck.innerHTML = '';
 
-        CONFIG.forEach(item => {
-            const ultimaTroca = parseInt(localStorage.getItem('last_'+item.id)) || 0;
-            const rodado = kmAtual - ultimaTroca;
-            
-            // Cálculos
-            const pSev = Math.min((rodado / item.severo) * 100, 100);
-            const pNorm = Math.min((rodado / item.normal) * 100, 100);
-            const rSev = item.severo - rodado;
-            const rNorm = item.normal - rodado;
-            const trocasRealizadas = Math.floor(kmAtual / item.severo);
+        ITEMS.forEach(item => {
+            const last = parseInt(localStorage.getItem('last_'+item.id)) || 0;
+            const rodado = km - last;
 
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <h3>
-                    <span>${item.name}</span>
-                    <span class="history-tag">Est. ${trocasRealizadas}x trocados</span>
-                </h3>
-                <p style="font-size: 11px; margin-top: -10px; opacity: 0.5;">${item.desc}</p>
-                
-                <div class="bars-container">
-                    <div class="bar-group">
-                        <span class="bar-label" style="color:var(--severo)">Uso Severo</span>
-                        <div class="progress-bg"><div class="progress-fill" style="width:${pSev}%; background:var(--severo)"></div></div>
-                        <span class="km-remain" style="color:${rSev <= 0 ? 'var(--severo)' : 'var(--text)'}">${rSev <= 0 ? 'VENCIDO' : 'Faltam '+rSev+'km'}</span>
+            deck.innerHTML += `
+                <div class="card">
+                    <div class="card-header">
+                        <div class="icon">${item.icon}</div>
+                        <div class="title-group">
+                            <h3>${item.name}</h3>
+                            <p>${item.spec}</p>
+                        </div>
                     </div>
-                    <div class="bar-group">
-                        <span class="bar-label" style="color:var(--normal)">Uso Normal</span>
-                        <div class="progress-bg"><div class="progress-fill" style="width:${pNorm}%; background:var(--normal)"></div></div>
-                        <span class="km-remain">${rNorm <= 0 ? 'VENCIDO' : 'Faltam '+rNorm+'km'}</span>
+
+                    <div class="mode-row">
+                        <div class="mode-info"><span style="color:var(--normal)">USO NORMAL</span> <span>Ref: ${item.normal}km</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:${Math.min((rodado/item.normal)*100, 100)}%; background:var(--normal)"></div></div>
+                        <div class="km-details">
+                            <span>Próxima: ${(last + item.normal).toLocaleString()}km</span>
+                            <span class="${rodado >= item.normal ? 'vencido' : ''}">${rodado >= item.normal ? 'VENCIDO' : 'Faltam '+(item.normal-rodado)+'km'}</span>
+                        </div>
                     </div>
+
+                    <div class="mode-row">
+                        <div class="mode-info"><span style="color:var(--severo)">USO SEVERO (Uber/99)</span> <span>Ref: ${item.severo}km</span></div>
+                        <div class="progress-bar"><div class="fill" style="width:${Math.min((rodado/item.severo)*100, 100)}%; background:var(--severo)"></div></div>
+                        <div class="km-details">
+                            <span>Próxima: ${(last + item.severo).toLocaleString()}km</span>
+                            <span class="${rodado >= item.severo ? 'vencido' : ''}">${rodado >= item.severo ? 'VENCIDO' : 'Faltam '+(item.severo-rodado)+'km'}</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-check" onclick="reset('${item.id}')">Registrar Troca Realizada</button>
                 </div>
-
-                <button class="btn-reset" onclick="resetItem('${item.id}')">Registrar Manutenção</button>
             `;
-            deck.appendChild(card);
         });
     }
 
-    function resetItem(id) {
+    function reset(id) {
         const km = document.getElementById('kmInput').value;
-        if(!km) return alert("Insira a quilometragem atual!");
+        if(!km) return alert("Digite a KM atual!");
         localStorage.setItem('last_'+id, km);
-        updateAll();
+        update();
     }
 
-    // Init
-    const savedKm = localStorage.getItem('km_save');
-    if(savedKm) {
-        document.getElementById('kmInput').value = savedKm;
-        updateAll();
-    }
+    document.getElementById('kmInput').value = localStorage.getItem('onix_km') || 0;
+    update();
 </script>
 
 </body>
